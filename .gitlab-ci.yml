@@ -1,9 +1,24 @@
 image: maven:latest
 
 stages:
-  build
+  - build
+  - test
+  - package
 
-build-api
+build-api:
   stage: build
   script:
+    - cd convocationtennis-api
     - mvn compile
+
+test-api:
+  stage: test
+  script:
+    - cd convocationtennis-api
+    - mvn test
+
+package-api:
+  stage: package
+  script:
+    - cd convocationtennis-api
+    - mvn package
