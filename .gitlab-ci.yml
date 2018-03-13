@@ -1,0 +1,9 @@
+image: maven:latest
+
+stages:
+  build
+
+build-api
+  stage: build
+  script:
+    - mvn compile
