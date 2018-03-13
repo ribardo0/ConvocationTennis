@@ -123,7 +123,7 @@ public class PouleService {
 			reponse2Str = EntityUtils.toString(response2.getEntity());
 			CloseableHttpResponse response3 = httpClient.execute(get3);
 			reponse3Str = EntityUtils.toString(response3.getEntity());
-			System.out.println(reponse3Str);
+			//System.out.println(reponse3Str);
 		} catch (IOException ioex) {
 			throw new RuntimeException(
 					"Erreur lors de l'appel pour la récupération des divisions/poules du championnat", ioex);
