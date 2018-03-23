@@ -1,4 +1,7 @@
 ﻿# ConvocationTennis
+
+[![pipeline status](https://gitlab.com/ribardo0/ConvocationTennis/badges/master/pipeline.svg)](https://gitlab.com/ribardo0/ConvocationTennis/commits/master)
+
 Permet de générer des convocations FFT en 3 minutes au lieu de 30
 
 Il faut se le dire, envoyer des convocations pour des matchs de tennis par équipe est un enfer, et ce n'est pas le site de la FFT qui nous y aide. Il faut ouvrir 8 écrans différents, aggréger le tout dans un PDF infâme et à la fin, recopier et envoyer tout ça dans un mail.

@@ -1,0 +1,26 @@
+image: maven:latest
+
+stages:
+  - build
+  - test
+  - package
+
+# Mis en commentaire car déjà inclus dans le mvn package même si en théorie ce sont 2 étapes différentes
+#build-api:
+#  stage: build
+#  script:
+#    - cd convocationtennis-api
+#    - mvn compile
+
+# Mis en commentaire car déjà inclus dans le mvn package même si en théorie ce sont 2 étapes différentes
+#test-api:
+#  stage: test
+#  script:
+#    - cd convocationtennis-api
+#    - mvn test
+
+package-api:
+  stage: package
+  script:
+    - cd convocationtennis-api
+    - mvn package
