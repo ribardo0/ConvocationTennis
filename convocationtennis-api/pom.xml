@@ -5,6 +5,11 @@
 	<artifactId>convocationtennis</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
+        <properties>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.organization>ribardo0-github</sonar.organization>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>

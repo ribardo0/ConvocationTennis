@@ -4,6 +4,7 @@ stages:
   - build
   - test
   - package
+  - analyse
 
 # Mis en commentaire car déjà inclus dans le mvn package même si en théorie ce sont 2 étapes différentes
 #build-api:
@@ -24,3 +25,9 @@ package-api:
   script:
     - cd convocationtennis-api
     - mvn package
+
+analyse-sonar:
+  stage: analyse
+  script:
+    - cd convocationtennis-api
+    - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar -Dsonar.login=$SONAR_LOGIN
