@@ -27,8 +27,8 @@ public class Main {
 	
 	private static final int idPoule = 325487;
 
-	public static ChampionnatService championnatService;
-	public static PouleService pouleService;
+	private static ChampionnatService championnatService;
+	private static PouleService pouleService;
 
 	//public static final HttpHost proxy = new HttpHost("127.0.0.1", 3128, "http");
 
