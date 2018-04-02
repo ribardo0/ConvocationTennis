@@ -16,7 +16,7 @@ public class ChampionnatServiceTest {
 	
 	@Test
 	public void consulterChampionnatTest() {
-		List<Championnat> championnats = championnatService.consulterChampionnat("D", "2018", "F", "200", "44");
+		List<Championnat> championnats = championnatService.rechercherChampionnat("D", "2018", "F", "200", "44");
 		assertTrue(championnats.size()> 0);
 	}
 	

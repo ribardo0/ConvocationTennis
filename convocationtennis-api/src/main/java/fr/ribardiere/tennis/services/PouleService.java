@@ -83,7 +83,7 @@ public class PouleService {
 		return result;
 	}
 	
-	// URL en /poule/{id}/equipe/{id} (c'est moche d'avoir 2 ID dans l'URL je sais
+	// URL en /poule/{id}/equipe/{id} (c'est moche d'avoir 2 ID dans l'URL je sais)
 	public List<Integer> consulterCalendrier(int idPoule, int idEquipe) {
 		List<Integer> result = new ArrayList<Integer>();
 		List<Rencontre> rencontres = consulterRencontres(idPoule);
@@ -211,7 +211,7 @@ public class PouleService {
 			convocation.setReportUnMoisAvantRencontre(true);
 		} else {
 			convocation.setEnvoiDixJoursAvantRencontre(true);
-			convocation.setEnvoiDixJoursAvantRencontre(false);
+			convocation.setReportUnMoisAvantRencontre(false);
 		}
 		
 		// TODO

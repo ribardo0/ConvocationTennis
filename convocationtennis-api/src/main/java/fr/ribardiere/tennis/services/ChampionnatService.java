@@ -20,7 +20,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import fr.ribardiere.tennis.Main;
 import fr.ribardiere.tennis.bean.Championnat;
 import fr.ribardiere.tennis.bean.Division;
 import fr.ribardiere.tennis.bean.Poule;
@@ -43,7 +42,7 @@ public class ChampionnatService {
 	 * @param departement
 	 * @return
 	 */
-	public List<Championnat> consulterChampionnat(String niveau, String annee, String sexe, String categorie, String departement) {
+	public List<Championnat> rechercherChampionnat(String niveau, String annee, String sexe, String categorie, String departement) {
 		String reponseChampionnats = postChampionnat(niveau, annee, sexe, categorie, departement);
 		List<Championnat> championnats = recupererChampionnats(reponseChampionnats);
 		return championnats;
