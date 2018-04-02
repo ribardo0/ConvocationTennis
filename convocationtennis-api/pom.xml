@@ -4,10 +4,12 @@
 	<groupId>fr.ribardiere.tennis</groupId>
 	<artifactId>convocationtennis</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-
-        <properties>
+    <properties>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<sonar.organization>ribardo0-github</sonar.organization>
+
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 
 	<dependencies>
