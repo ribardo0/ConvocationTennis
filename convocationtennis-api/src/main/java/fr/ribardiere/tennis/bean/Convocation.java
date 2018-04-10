@@ -38,6 +38,26 @@ public class Convocation {
 	private String lieu;
 	private String motifReport;
 	
+	public Convocation() {
+        this.seniorHiverDames = false;
+        this.coupeHiverDames = false;
+        this.seniorEteDames = false;
+	    this.seniorPlus35Dames = false;
+        this.seniorPlusEte35Dames = false;
+        this.seniorHiverMessieurs = false;
+	    this.seniorPlus35Messieurs = false;
+	    this.seniorPlus45Messieurs = false;
+	    this.seniorPlus55Messieurs = false;
+	    this.seniorPlus65Messieurs = false;
+	    this.seniorPlus75Messieurs = false;
+	    this.seniorEteMessieurs = false;
+	    this.seniorPlusEte35Messieurs = false;
+	    this.seniorPlusEte45Messieurs = false;
+	    this.seniorPlusEte55Messieurs = false;
+	    this.seniorPlusEte65Messieurs = false;
+        this.seniorEteMixte = false;
+	}
+	
 	public Date getDateEnvoi() {
 		return dateEnvoi;
 	}

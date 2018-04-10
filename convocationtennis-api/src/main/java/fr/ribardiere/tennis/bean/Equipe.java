@@ -5,7 +5,6 @@ public class Equipe {
 	private int id;
 	private String nom;
 	
-	
 	public String getNom() {
 		return nom;
 	}
@@ -24,6 +23,5 @@ public class Equipe {
 	public Equipe(int id) {
 		this.id = id;
 	}
-	
 	
 }

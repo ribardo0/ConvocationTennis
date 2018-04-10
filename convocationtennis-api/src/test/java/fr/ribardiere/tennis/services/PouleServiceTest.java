@@ -1,21 +1,21 @@
 package fr.ribardiere.tennis.services;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
 import org.junit.Test;
 
-import fr.ribardiere.tennis.bean.Equipe;
+import fr.ribardiere.tennis.bean.Poule;
 
 public class PouleServiceTest {
 
 	private PouleService pouleService = new PouleService();
 	
 	@Test
-	public void testConsulterEquipe() {
-		List<Equipe> equipes = pouleService.consulterEquipe(325487);
-		assertTrue(equipes.size() > 0);
+	public void testConsulterPoule() {
+		Poule poule = pouleService.consulterPoule(325487);
+		assertTrue(poule.getEquipes().size() > 0);
 	}
 	
 	@Test

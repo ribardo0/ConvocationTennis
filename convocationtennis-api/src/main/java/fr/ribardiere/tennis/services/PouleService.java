@@ -21,18 +21,19 @@ import org.jsoup.select.Elements;
 
 import fr.ribardiere.tennis.bean.Convocation;
 import fr.ribardiere.tennis.bean.Equipe;
+import fr.ribardiere.tennis.bean.Poule;
 import fr.ribardiere.tennis.bean.Rencontre;
 
 public class PouleService {
 
-    private static final String URL_EQUIPES = "http://www.gs.applipub-fft.fr/fftfr/poule.do?dispatch=load&pou_iid=";
+    private static final String URL_POULE = "http://www.gs.applipub-fft.fr/fftfr/poule.do?dispatch=load&pou_iid=";
     private static final String URL_RENCONTRES = "http://www.gs.applipub-fft.fr/fftfr/pouleRencontres.do?dispatch=load&pou_iid=";
     private static final String URL_RENCONTRES_PAGE1 = "http://www.gs.applipub-fft.fr/fftfr/sort.do?layoutCollection=0&layoutCollectionProperty=&layoutCollectionState=0&pagerPage=1";
     private static final String URL_RENCONTRES_PAGE2 = "http://www.gs.applipub-fft.fr/fftfr/sort.do?layoutCollection=0&layoutCollectionProperty=&layoutCollectionState=1&pagerPage=2";
 
     // URL en /poule/{id}
-    public List<Equipe> consulterEquipe(int idPoule) {
-        List<Equipe> result = new ArrayList<>();
+    public Poule consulterPoule(int idPoule) {
+        Poule result = new Poule(idPoule);
 
         String reponseStr = "";
         
@@ -41,7 +42,7 @@ public class PouleService {
 
             RequestConfig config = RequestConfig.custom()./* setProxy(Main.proxy). */build();
 
-            HttpGet get = new HttpGet(URL_EQUIPES + idPoule);
+            HttpGet get = new HttpGet(URL_POULE + idPoule);
             get.setConfig(config);
 
             CloseableHttpResponse response = httpClient.execute(get);
@@ -55,7 +56,23 @@ public class PouleService {
 
         // Parsing de la réponse
         Document doc = Jsoup.parse(reponseStr);
-        Elements elems = doc.select("#tabs0tab0 table tbody tr td table tbody tr td table tbody tr td table tbody tr");
+        // Recupération du nom du championnat
+        Elements elems = doc.select("center form table tbody tr td table tbody tr td table tbody tr td b");
+        result.setCategorieChampionnat(elems.get(0).ownText().trim());
+        result.setNomChampionnat(elems.get(1).ownText().trim());
+        elems = doc.select("center form table tbody tr td table tbody tr td table tbody tr td b nobr");
+        result.setNomDivision(elems.get(0).ownText().trim());
+        elems = doc.select("table.form2 tbody tr td table tbody tr td select option");
+        for (Element elem : elems) {
+            if (elem.attr("value").equals(Integer.toString(idPoule))) {
+                result.setLettrePoule(elem.ownText().trim());
+            }
+        }
+        
+        // Recuperation des équipes
+        List<Equipe> equipes = new ArrayList<>();
+        
+        elems = doc.select("#tabs0tab0 table tbody tr td table tbody tr td table tbody tr td table tbody tr");
         for (Element elem : elems) {
             Elements elems2 = elem.select("td");
             if (!elems2.isEmpty()) { // Permet de ne pas lire la ligne d'entête qui ne contient que des th
@@ -71,13 +88,15 @@ public class PouleService {
 
                 Equipe equipe = new Equipe(idEquipe);
                 equipe.setNom(nomEquipe);
-                result.add(equipe);
+                equipes.add(equipe);
             }
         }
+        
+        result.setEquipes(equipes);
 
         return result;
     }
-
+  
     // URL en /poule/{id}/equipe/{id} (c'est moche d'avoir 2 ID dans l'URL je sais)
     public List<Integer> consulterCalendrier(int idPoule, int idEquipe) {
         List<Integer> result = new ArrayList<>();
@@ -211,6 +230,63 @@ public class PouleService {
             convocation.setReportUnMoisAvantRencontre(false);
         }
 
+        Poule poule = consulterPoule(idPoule);
+        if (poule.getCategorieChampionnat().contains("Homme")) {
+            if (poule.getCategorieChampionnat().contains("75")) {
+                convocation.setSeniorPlus75Messieurs(true);
+            } else if (poule.getCategorieChampionnat().contains("65")) {
+                if (poule.getNomChampionnat().contains("Ete")) {
+                    convocation.setSeniorPlusEte65Messieurs(true);
+                } else {
+                    convocation.setSeniorPlus65Messieurs(true);
+                }
+            } else if (poule.getCategorieChampionnat().contains("55")) {
+                if (poule.getNomChampionnat().contains("Ete")) {
+                    convocation.setSeniorPlusEte55Messieurs(true);
+                } else {
+                    convocation.setSeniorPlus55Messieurs(true);
+                }
+            } else if (poule.getCategorieChampionnat().contains("45")) {
+                if (poule.getNomChampionnat().contains("Ete")) {
+                    convocation.setSeniorPlusEte45Messieurs(true);
+                } else {
+                    convocation.setSeniorPlus45Messieurs(true);
+                }
+            } else if (poule.getCategorieChampionnat().contains("35")) {
+                if (poule.getNomChampionnat().contains("Ete")) {
+                    convocation.setSeniorPlusEte35Messieurs(true);
+                } else {
+                    convocation.setSeniorPlus35Messieurs(true);
+                }
+            } else {
+                if (poule.getNomChampionnat().contains("Ete")) {
+                    convocation.setSeniorEteMessieurs(true);
+                } else {
+                    convocation.setSeniorHiverMessieurs(true);
+                }
+            }
+        } else if (poule.getCategorieChampionnat().contains("Femme")) {
+            if (poule.getCategorieChampionnat().contains("35")) {
+                if (poule.getNomChampionnat().contains("ETE")) {
+                    convocation.setSeniorPlusEte35Dames(true);
+                } else {
+                    convocation.setSeniorPlus35Dames(true);
+                }
+            } else {
+                if (poule.getNomChampionnat().contains("COUPE")) {
+                    convocation.setCoupeHiverDames(true);
+                } else if (poule.getNomChampionnat().contains("ETE")) {
+                    convocation.setSeniorEteDames(true);
+                } else {
+                    convocation.setSeniorHiverDames(true);
+                }
+            }
+        } else {
+            convocation.setSeniorEteMixte(true);
+        }
+        convocation.setDivision(poule.getNomDivision());
+        convocation.setPoule(poule.getLettrePoule());
+        convocation.setJournee(journee);
         // TODO
 
         return convocation;
