@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.websocket.server.PathParam;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -19,11 +21,16 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import fr.ribardiere.tennis.bean.Championnat;
 import fr.ribardiere.tennis.bean.Division;
 import fr.ribardiere.tennis.bean.Poule;
 
+@RestController
 public class ChampionnatService {
 
     private static final String URLFORMULAIRE = "http://www.gs.applipub-fft.fr/fftfr/championnat.do";
@@ -32,8 +39,8 @@ public class ChampionnatService {
     private static final String URLPOULE_END = "*1&bundle=org.apache.struts.action.MESSAGE&name=listePoules&class=treeview1";
 
     /**
-     * Récupère la liste des championnats (ID + nom) par rapport aux critères en
-     * entrée URL en /championnat/
+     * Rï¿½cupï¿½re la liste des championnats (ID + nom) par rapport aux critï¿½res en
+     * entrï¿½e URL en /championnat/
      * 
      * @param niveau
      * @param annee
@@ -42,8 +49,9 @@ public class ChampionnatService {
      * @param departement
      * @return
      */
-    public List<Championnat> rechercherChampionnat(String niveau, String annee, String sexe, String categorie,
-            String departement) {
+    @RequestMapping("/championnat")
+    public List<Championnat> rechercherChampionnat(@RequestParam String niveau, @RequestParam String annee, @RequestParam String sexe, @RequestParam String categorie,
+            @RequestParam String departement) {
         String reponseChampionnats = postChampionnat(niveau, annee, sexe, categorie, departement);
         return recupererChampionnats(reponseChampionnats);
     }
@@ -77,7 +85,7 @@ public class ChampionnatService {
                 response.close();
             }
         } catch (IOException ioex) {
-            throw new RuntimeException("Erreur lors de l'appel pour la récupération de l'identifiant du championnat",
+            throw new RuntimeException("Erreur lors de l'appel pour la rï¿½cupï¿½ration de l'identifiant du championnat",
                     ioex);
         }
 
@@ -93,7 +101,7 @@ public class ChampionnatService {
             Elements elems = doc.select("#tabs0tab1 tr td table tr td table tr td table tr");
             if (elems.size() > 1) {
                 for (int i = 1; i < elems.size(); i++) { // On ignore la
-                                                         // première ligne de
+                                                         // premiï¿½re ligne de
                                                          // header
                     Element elem = elems.get(i);
                     Elements elems2 = elem.select("td");
@@ -119,7 +127,8 @@ public class ChampionnatService {
     }
 
     // URL en /championnat/{id}
-    public List<Division> consulterDivisions(int idChampionnat) {
+    @RequestMapping("/championnat/{idChampionnat}")
+    public List<Division> consulterDivisions(@PathVariable int idChampionnat) {
         List<Division> result = new ArrayList<>();
 
         HttpGet get = new HttpGet(URLCHAMPIONNAT + idChampionnat);
@@ -138,7 +147,7 @@ public class ChampionnatService {
             doc = Jsoup.parse(EntityUtils.toString(response.getEntity()));
         } catch (IOException ioex) {
             throw new RuntimeException(
-                    "Erreur lors de l'appel pour la récupération des divisions/poules du championnat", ioex);
+                    "Erreur lors de l'appel pour la rï¿½cupï¿½ration des divisions/poules du championnat", ioex);
         }
         
         Elements elems = doc.select("table tbody tr td div font");
@@ -152,7 +161,8 @@ public class ChampionnatService {
     }
 
     // URL en /championnat/{id}/division/{numeroDivision}
-    public List<Poule> consulterPoules(int idChampionnat, int idDivision) {
+    @RequestMapping("/championnat/{idChampionnat}/division/{idDivision}")
+    public List<Poule> consulterPoules(@PathVariable int idChampionnat, @PathVariable int idDivision) {
         List<Poule> poules = new ArrayList<>();
 
         // Appels http
@@ -169,7 +179,7 @@ public class ChampionnatService {
         String result = "";
 
         try {
-            httpClient.execute(get1); // Permet de setter le cookie qui sert à se souvenir de l'ID de championnat (la
+            httpClient.execute(get1); // Permet de setter le cookie qui sert ï¿½ se souvenir de l'ID de championnat (la
                                       // fftest statefull)
             CloseableHttpResponse response = httpClient.execute(get2);
 
@@ -177,10 +187,10 @@ public class ChampionnatService {
 
         } catch (IOException ioex) {
             throw new RuntimeException(
-                    "Erreur lors de l'appel pour la récupération des divisions/poules du championnat", ioex);
+                    "Erreur lors de l'appel pour la rï¿½cupï¿½ration des divisions/poules du championnat", ioex);
         }
 
-        // Parsing de la réponse (javascript donc pas via JSOUP)
+        // Parsing de la rï¿½ponse (javascript donc pas via JSOUP)
         int i = 0;
         String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
