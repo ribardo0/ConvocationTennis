@@ -18,12 +18,16 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import fr.ribardiere.tennis.bean.Convocation;
 import fr.ribardiere.tennis.bean.Equipe;
 import fr.ribardiere.tennis.bean.Poule;
 import fr.ribardiere.tennis.bean.Rencontre;
 
+@RestController
 public class PouleService {
 
     private static final String URL_POULE = "http://www.gs.applipub-fft.fr/fftfr/poule.do?dispatch=load&pou_iid=";
@@ -32,7 +36,8 @@ public class PouleService {
     private static final String URL_RENCONTRES_PAGE2 = "http://www.gs.applipub-fft.fr/fftfr/sort.do?layoutCollection=0&layoutCollectionProperty=&layoutCollectionState=1&pagerPage=2";
 
     // URL en /poule/{id}
-    public Poule consulterPoule(int idPoule) {
+    @RequestMapping("/poule/{idPoule}")
+    public Poule consulterPoule(@PathVariable int idPoule) {
         Poule result = new Poule(idPoule);
 
         String reponseStr = "";
@@ -51,12 +56,12 @@ public class PouleService {
 
         } catch (IOException ioex) {
             throw new RuntimeException(
-                    "Erreur lors de l'appel pour la récupération des divisions/poules du championnat", ioex);
+                    "Erreur lors de l'appel pour la rï¿½cupï¿½ration des divisions/poules du championnat", ioex);
         }
 
-        // Parsing de la réponse
+        // Parsing de la rï¿½ponse
         Document doc = Jsoup.parse(reponseStr);
-        // Recupération du nom du championnat
+        // Recupï¿½ration du nom du championnat
         Elements elems = doc.select("center form table tbody tr td table tbody tr td table tbody tr td b");
         result.setCategorieChampionnat(elems.get(0).ownText().trim());
         result.setNomChampionnat(elems.get(1).ownText().trim());
@@ -69,21 +74,21 @@ public class PouleService {
             }
         }
         
-        // Recuperation des équipes
+        // Recuperation des ï¿½quipes
         List<Equipe> equipes = new ArrayList<>();
         
         elems = doc.select("#tabs0tab0 table tbody tr td table tbody tr td table tbody tr td table tbody tr");
         for (Element elem : elems) {
             Elements elems2 = elem.select("td");
-            if (!elems2.isEmpty()) { // Permet de ne pas lire la ligne d'entête qui ne contient que des th
-                // Récupération de l'ID de l'équipe
+            if (!elems2.isEmpty()) { // Permet de ne pas lire la ligne d'entï¿½te qui ne contient que des th
+                // Rï¿½cupï¿½ration de l'ID de l'ï¿½quipe
                 Element img = elems2.get(0).select("img").get(0);
                 String onclick = img.attr("onclick");
                 int index1 = onclick.indexOf('\'');
                 int index2 = onclick.indexOf('\'', index1 + 2);
                 int idEquipe = Integer.parseInt(onclick.substring(index1 + 1, index2));
 
-                // Récupération du nom de l'équipe
+                // Rï¿½cupï¿½ration du nom de l'ï¿½quipe
                 String nomEquipe = elems2.get(1).ownText().trim();
 
                 Equipe equipe = new Equipe(idEquipe);
@@ -98,7 +103,8 @@ public class PouleService {
     }
   
     // URL en /poule/{id}/equipe/{id} (c'est moche d'avoir 2 ID dans l'URL je sais)
-    public List<Integer> consulterCalendrier(int idPoule, int idEquipe) {
+    @RequestMapping("/poule/{idPoule}/equipe/{idEquipe}")
+    public List<Integer> consulterCalendrier(@PathVariable int idPoule, @PathVariable int idEquipe) {
         List<Integer> result = new ArrayList<>();
         List<Rencontre> rencontres = consulterRencontres(idPoule);
         for (Rencontre rencontre : rencontres) {
@@ -139,10 +145,10 @@ public class PouleService {
             reponse3Str = EntityUtils.toString(response3.getEntity());
         } catch (IOException ioex) {
             throw new RuntimeException(
-                    "Erreur lors de l'appel pour la récupération des divisions/poules du championnat", ioex);
+                    "Erreur lors de l'appel pour la rï¿½cupï¿½ration des divisions/poules du championnat", ioex);
         }
 
-        // Parsing de la réponse
+        // Parsing de la rï¿½ponse
         rencontres.addAll(recupererRencontresDansPage(reponse1Str, 0));
         rencontres.addAll(recupererRencontresDansPage(reponse2Str, 1));
         rencontres.addAll(recupererRencontresDansPage(reponse3Str, 2));
@@ -154,7 +160,7 @@ public class PouleService {
         Document doc = Jsoup.parse(reponse);
         Elements trs = doc.select("#tabs" + page
                 + "tab2>table>tbody>tr>td>table>tbody>tr>td>table>tbody>tr>td>table>tbody>tr>td>table>tbody>tr");
-        for (int i = 1; i < trs.size(); i++) { // On bypass le 1er élément correspondant au header de la table
+        for (int i = 1; i < trs.size(); i++) { // On bypass le 1er ï¿½lï¿½ment correspondant au header de la table
             Elements tds = null;
             if (i % 2 == 0) {
                 tds = trs.get(i).select("td.L1");
@@ -202,7 +208,7 @@ public class PouleService {
      * @param idEquipe
      * @param journee
      * @param dateReelle
-     *            la date réelle de la rencontre (jour + heure de début)
+     *            la date rï¿½elle de la rencontre (jour + heure de dï¿½but)
      * @param isReport
      * @param motifReport
      * @return
