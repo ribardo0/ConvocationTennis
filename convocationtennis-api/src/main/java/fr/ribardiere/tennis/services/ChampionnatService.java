@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.websocket.server.PathParam;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -25,6 +23,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestFactory;
+import com.google.api.client.http.javanet.NetHttpTransport;
 
 import fr.ribardiere.tennis.bean.Championnat;
 import fr.ribardiere.tennis.bean.Division;
@@ -50,7 +53,8 @@ public class ChampionnatService {
      * @return
      */
     @RequestMapping("/championnat")
-    public List<Championnat> rechercherChampionnat(@RequestParam String niveau, @RequestParam String annee, @RequestParam String sexe, @RequestParam String categorie,
+    public List<Championnat> rechercherChampionnat(@RequestParam String niveau, @RequestParam String annee,
+            @RequestParam String sexe, @RequestParam String categorie,
             @RequestParam String departement) {
         String reponseChampionnats = postChampionnat(niveau, annee, sexe, categorie, departement);
         return recupererChampionnats(reponseChampionnats);
@@ -135,21 +139,33 @@ public class ChampionnatService {
 
         CloseableHttpResponse response = null;
         Document doc = null;
+        /*
+         * try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+         * 
+         * RequestConfig config = RequestConfig.custom()./* setProxy(Main.proxy).
+         *//*
+            * build();
+            * 
+            * get.setConfig(config);
+            * 
+            * response = httpClient.execute(get);
+            * 
+            * doc = Jsoup.parse(EntityUtils.toString(response.getEntity())); } catch
+            * (IOException ioex) { throw new RuntimeException(
+            * "Erreur lors de l'appel pour la r�cup�ration des divisions/poules du championnat"
+            * , ioex); }
+            */
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-
-            RequestConfig config = RequestConfig.custom()./* setProxy(Main.proxy). */build();
-
-            get.setConfig(config);
-
-            response = httpClient.execute(get);
-            
-            doc = Jsoup.parse(EntityUtils.toString(response.getEntity()));
+        try {
+            HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory();
+            HttpRequest request = requestFactory.buildGetRequest(
+                    new GenericUrl(URLCHAMPIONNAT + idChampionnat));
+            doc = Jsoup.parse(request.execute().parseAsString());
         } catch (IOException ioex) {
             throw new RuntimeException(
                     "Erreur lors de l'appel pour la r�cup�ration des divisions/poules du championnat", ioex);
         }
-        
+
         Elements elems = doc.select("table tbody tr td div font");
         for (Element elem : elems) {
             String divisionNom = elem.ownText().replace("\u00a0", ""); // Supprime les &nbsp; de la chaine

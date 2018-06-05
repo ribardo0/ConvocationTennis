@@ -12,5 +12,5 @@ public class ConvocationTennisApplication {
         SpringApplication.run(ConvocationTennisApplication.class, args);
 
     }
-
+    
 }
