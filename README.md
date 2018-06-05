@@ -1,9 +1,9 @@
 ﻿# ConvocationTennis
 
 [![pipeline status](https://gitlab.com/ribardo0/ConvocationTennis/badges/master/pipeline.svg)](https://gitlab.com/ribardo0/ConvocationTennis/commits/master)
-[![Quality Gate](https://sonarcloud.io/api/badges/gate?key=fr.ribardiere.tennis%3Aconvocationtennis)](https://sonarcloud.io/dashboard/index/fr.ribardiere.tennis%3Aconvocationtennis)
-[![Quality Gate](https://sonarcloud.io/api/badges/measure?key=fr.ribardiere.tennis%3Aconvocationtennis&metric=coverage)](https://sonarcloud.io/dashboard/index/fr.ribardiere.tennis%3Aconvocationtennis)
-[![Quality Gate](https://sonarcloud.io/api/badges/measure?key=fr.ribardiere.tennis%3Aconvocationtennis&metric=ncloc)](https://sonarcloud.io/dashboard/index/fr.ribardiere.tennis%3Aconvocationtennis)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/gate?project=fr.ribardiere.tennis%3Aconvocationtennis)](https://sonarcloud.io/dashboard/index/fr.ribardiere.tennis%3Aconvocationtennis)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=fr.ribardiere.tennis%3Aconvocationtennis&metric=coverage)](https://sonarcloud.io/dashboard/index/fr.ribardiere.tennis%3Aconvocationtennis)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=fr.ribardiere.tennis%3Aconvocationtennis&metric=ncloc)](https://sonarcloud.io/dashboard/index/fr.ribardiere.tennis%3Aconvocationtennis)
 
 Permet de générer des convocations FFT en 3 minutes au lieu de 30
 
