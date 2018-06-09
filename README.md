@@ -12,5 +12,11 @@ Temps de cerveau utile : 20 secondes.
 Temps pour préparer et envoyer une convocation : 30 minutes.
 
 L'objectif de cet utilitaire est le suivant :
-- exposer une API qui génère le PDF à partir des infos utilisateurs et des infos collectées sur le site de la FFT (http://www.gs.applipub-fft.fr/), à la cible exposée dans le cloud (AWS ou Google, à décider)
+- exposer une API qui génère le PDF à partir des infos utilisateurs et des infos collectées sur le site de la FFT (http://www.gs.applipub-fft.fr/), à la cible exposée dans le cloud (Google plutôt qu'AWS car ils permettent d'avoir un minimum de 0 instances sur app engine --> nettement moins cher)
+  - Les premières ressources sont accessibles sur https://convocation-tennis.appspot.com/
+    - /championnat?niveau=D&annee=2018&sexe=F&categorie=200&departement=44 pour rechercher un championnat
+	- /championnat/82133499 (idChampionnat) pour consulter un championnnat et récupérer ses divisions
+	- /championnat/82133499/division/3 (idChampionnat et idDivision) pour consulter les poules d'une division d'un championnat
+	- /poule/325487 (idPoule) pour consulter une poule et ses équipes
+	- /poule/325487/equipe/1448919 (idPoule et idEquipe) pour consulter les journées où l'équipe reçoit à domicile
 - exposer un site qui utilise l'API et permet simplement de récupérer le PDF (là encore exposé dans le cloud).
