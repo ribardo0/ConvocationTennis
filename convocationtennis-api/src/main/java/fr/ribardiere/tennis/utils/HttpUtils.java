@@ -1,11 +1,6 @@
 package fr.ribardiere.tennis.utils;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -15,7 +10,6 @@ import org.apache.http.NameValuePair;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.HttpStatusCodes;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
 
@@ -25,8 +19,12 @@ import com.google.api.client.repackaged.com.google.common.base.Strings;
  *
  */
 public class HttpUtils {
-
-    private static final String USER_AGENT = "Mozilla/5.0";
+    
+    private static final String ERR_MSG = "Erreur lors de l'appel à l'url ";
+    
+    private HttpUtils() {
+        
+    }
 
     public static String callGet(String url) {
         return callGet(url, null);
@@ -44,7 +42,7 @@ public class HttpUtils {
             result = request.execute().parseAsString();
         } catch (IOException ioex) {
             throw new RuntimeException(
-                    "Erreur lors de l'appel à l'url " + url, ioex);
+                    ERR_MSG + url, ioex);
         }
         return result;
     }
@@ -63,7 +61,7 @@ public class HttpUtils {
             for(String cookie : cookies) {
                 if (cookie.contains("JSESSIONID")) {
                     if (cookie.contains(";")) {
-                        result = cookie.substring(0, cookie.indexOf(";"));
+                        result = cookie.substring(0, cookie.indexOf(';'));
                     } else {
                         result = cookie;
                     }
@@ -71,7 +69,7 @@ public class HttpUtils {
             }
         } catch (IOException ioex) {
             throw new RuntimeException(
-                    "Erreur lors de l'appel à l'url " + url, ioex);
+                    ERR_MSG + url, ioex);
         }
         return result;
     }
@@ -81,7 +79,7 @@ public class HttpUtils {
 
         
         try {
-            String urlParameters = "";//sn=C02G8416DRJM&cn=&locale=&caller=&num=12345";
+            String urlParameters = "";
             for(NameValuePair param : params) {
                 urlParameters+=URLEncoder.encode(param.getName(), StandardCharsets.UTF_8.name()) + "=" + URLEncoder.encode(param.getValue(), StandardCharsets.UTF_8.name()) + "&";
             }
@@ -94,7 +92,7 @@ public class HttpUtils {
             result = request.execute().parseAsString();
         } catch (IOException ioex) {
             throw new RuntimeException(
-                    "Erreur lors de l'appel à l'url " + url, ioex);
+                    ERR_MSG + url, ioex);
         }
         return result;
     }
