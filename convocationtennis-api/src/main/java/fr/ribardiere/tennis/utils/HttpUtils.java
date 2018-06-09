@@ -85,7 +85,7 @@ public class HttpUtils {
             for(NameValuePair param : params) {
                 urlParameters+=URLEncoder.encode(param.getName(), StandardCharsets.UTF_8.name()) + "=" + URLEncoder.encode(param.getValue(), StandardCharsets.UTF_8.name()) + "&";
             }
-            urlParameters.substring(0, urlParameters.length() - 1);
+            urlParameters = urlParameters.substring(0, urlParameters.length() - 1);
 
             
             HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory();
