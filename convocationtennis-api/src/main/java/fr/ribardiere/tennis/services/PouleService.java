@@ -22,10 +22,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestFactory;
+import com.google.api.client.http.javanet.NetHttpTransport;
+
 import fr.ribardiere.tennis.bean.Convocation;
 import fr.ribardiere.tennis.bean.Equipe;
 import fr.ribardiere.tennis.bean.Poule;
 import fr.ribardiere.tennis.bean.Rencontre;
+import fr.ribardiere.tennis.utils.HttpUtils;
 
 @RestController
 public class PouleService {
@@ -40,25 +46,8 @@ public class PouleService {
     public Poule consulterPoule(@PathVariable int idPoule) {
         Poule result = new Poule(idPoule);
 
-        String reponseStr = "";
+        String reponseStr = HttpUtils.callGet(URL_POULE + idPoule);
         
-        // Appel http
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-
-            RequestConfig config = RequestConfig.custom()./* setProxy(Main.proxy). */build();
-
-            HttpGet get = new HttpGet(URL_POULE + idPoule);
-            get.setConfig(config);
-
-            CloseableHttpResponse response = httpClient.execute(get);
-
-            reponseStr = EntityUtils.toString(response.getEntity());
-
-        } catch (IOException ioex) {
-            throw new RuntimeException(
-                    "Erreur lors de l'appel pour la r�cup�ration des divisions/poules du championnat", ioex);
-        }
-
         // Parsing de la r�ponse
         Document doc = Jsoup.parse(reponseStr);
         // Recup�ration du nom du championnat
@@ -116,37 +105,24 @@ public class PouleService {
     }
 
     private List<Rencontre> consulterRencontres(int idPoule) {
+        // 1ere requete sur http://www.gs.applipub-fft.fr/fftfr/pouleRencontres.do?dispatch=load&pou_iid=325487
+        //Set-Cookie: gsgsp_user=www.fft.fr; Expires=Wed, 26-Jun-2086 23:52:39 GMT; Path=/;HttpOnly
+        //Set-Cookie: JSESSIONID=0C4B07BE5EF0B1FFE90E034053DA656F.prdmdl02_instance7; Path=/fftfr/; HttpOnly;HttpOnly
+        
+        // 2eme requete sur http://www.gs.applipub-fft.fr/fftfr/sort.do?layoutCollection=0&layoutCollectionProperty=&layoutCollectionState=0&pagerPage=1
+        // Cookie: JSESSIONID=0C4B07BE5EF0B1FFE90E034053DA656F.prdmdl02_instance7; gsgsp_user=www.fft.fr
+        //Set-Cookie: gsgsp_user=www.fft.fr; Expires=Wed, 26-Jun-2086 23:52:54 GMT; Path=/;HttpOnly
+        
+        // 3eme requete sur http://www.gs.applipub-fft.fr/fftfr/sort.do?layoutCollection=0&layoutCollectionProperty=&layoutCollectionState=1&pagerPage=2
+        // Cookie: JSESSIONID=0C4B07BE5EF0B1FFE90E034053DA656F.prdmdl02_instance7; gsgsp_user=www.fft.fr
+        // Set-Cookie: gsgsp_user=www.fft.fr; Expires=Wed, 26-Jun-2086 23:52:56 GMT; Path=/;HttpOnly
 
         List<Rencontre> rencontres = new ArrayList<>();
 
-        // Appel http
-        BasicCookieStore basicCookieStore = new BasicCookieStore();
-        CloseableHttpClient httpClient = HttpClients.custom().setDefaultCookieStore(basicCookieStore).build();
-
-        RequestConfig config = RequestConfig.custom()./* setProxy(Main.proxy). */build();
-
-        HttpGet get1 = new HttpGet(URL_RENCONTRES + idPoule);
-        get1.setConfig(config);
-        HttpGet get2 = new HttpGet(URL_RENCONTRES_PAGE1);
-        get2.setConfig(config);
-        HttpGet get3 = new HttpGet(URL_RENCONTRES_PAGE2);
-        get3.setConfig(config);
-
-        String reponse1Str = "";
-        String reponse2Str = "";
-        String reponse3Str = "";
-
-        try {
-            CloseableHttpResponse response1 = httpClient.execute(get1);
-            reponse1Str = EntityUtils.toString(response1.getEntity());
-            CloseableHttpResponse response2 = httpClient.execute(get2);
-            reponse2Str = EntityUtils.toString(response2.getEntity());
-            CloseableHttpResponse response3 = httpClient.execute(get3);
-            reponse3Str = EntityUtils.toString(response3.getEntity());
-        } catch (IOException ioex) {
-            throw new RuntimeException(
-                    "Erreur lors de l'appel pour la r�cup�ration des divisions/poules du championnat", ioex);
-        }
+        String cookie = HttpUtils.callToGetCookie(URL_RENCONTRES + idPoule);
+        String reponse1Str = HttpUtils.callGet(URL_RENCONTRES + idPoule);
+        String reponse2Str = HttpUtils.callGet(URL_RENCONTRES_PAGE1, cookie);
+        String reponse3Str = HttpUtils.callGet(URL_RENCONTRES_PAGE2, cookie);
 
         // Parsing de la r�ponse
         rencontres.addAll(recupererRencontresDansPage(reponse1Str, 0));

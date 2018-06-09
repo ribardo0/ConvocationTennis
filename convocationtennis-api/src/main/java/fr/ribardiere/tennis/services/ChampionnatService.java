@@ -32,6 +32,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import fr.ribardiere.tennis.bean.Championnat;
 import fr.ribardiere.tennis.bean.Division;
 import fr.ribardiere.tennis.bean.Poule;
+import fr.ribardiere.tennis.utils.HttpUtils;
 
 @RestController
 public class ChampionnatService {
@@ -61,37 +62,17 @@ public class ChampionnatService {
     }
 
     private String postChampionnat(String niveau, String annee, String sexe, String categorie, String departement) {
-        HttpPost post = new HttpPost(URLFORMULAIRE);
-
         String result = "";
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-
-            RequestConfig config = RequestConfig.custom()./* setProxy(Main.proxy). */build();
-
-            post.setConfig(config);
-
-            List<NameValuePair> urlParameters = new ArrayList<>();
-            urlParameters.add(new BasicNameValuePair("dispatch", "rechercher"));
-
-            urlParameters.add(new BasicNameValuePair("niv_hierarchique", niveau));
-            urlParameters.add(new BasicNameValuePair("mil_sisport", annee));
-            urlParameters.add(new BasicNameValuePair("hoi_asexe", sexe));
-            urlParameters.add(new BasicNameValuePair("cah_icod", categorie));
-            urlParameters.add(new BasicNameValuePair("cod_cno", departement));
-
-            post.setEntity(new UrlEncodedFormEntity(urlParameters));
-            CloseableHttpResponse response = httpClient.execute(post);
-
-            try {
-                result = EntityUtils.toString(response.getEntity());
-            } finally {
-                response.close();
-            }
-        } catch (IOException ioex) {
-            throw new RuntimeException("Erreur lors de l'appel pour la r�cup�ration de l'identifiant du championnat",
-                    ioex);
-        }
+        List<NameValuePair> urlParameters = new ArrayList<>();
+        urlParameters.add(new BasicNameValuePair("dispatch", "rechercher"));
+        urlParameters.add(new BasicNameValuePair("niv_hierarchique", niveau));
+        urlParameters.add(new BasicNameValuePair("mil_sisport", annee));
+        urlParameters.add(new BasicNameValuePair("hoi_asexe", sexe));
+        urlParameters.add(new BasicNameValuePair("cah_icod", categorie));
+        urlParameters.add(new BasicNameValuePair("cod_cno", departement));
+        
+        result = HttpUtils.callPost(URLFORMULAIRE, urlParameters);
 
         return result;
     }
@@ -135,36 +116,8 @@ public class ChampionnatService {
     public List<Division> consulterDivisions(@PathVariable int idChampionnat) {
         List<Division> result = new ArrayList<>();
 
-        HttpGet get = new HttpGet(URLCHAMPIONNAT + idChampionnat);
-
-        CloseableHttpResponse response = null;
-        Document doc = null;
-        /*
-         * try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-         * 
-         * RequestConfig config = RequestConfig.custom()./* setProxy(Main.proxy).
-         *//*
-            * build();
-            * 
-            * get.setConfig(config);
-            * 
-            * response = httpClient.execute(get);
-            * 
-            * doc = Jsoup.parse(EntityUtils.toString(response.getEntity())); } catch
-            * (IOException ioex) { throw new RuntimeException(
-            * "Erreur lors de l'appel pour la r�cup�ration des divisions/poules du championnat"
-            * , ioex); }
-            */
-
-        try {
-            HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory();
-            HttpRequest request = requestFactory.buildGetRequest(
-                    new GenericUrl(URLCHAMPIONNAT + idChampionnat));
-            doc = Jsoup.parse(request.execute().parseAsString());
-        } catch (IOException ioex) {
-            throw new RuntimeException(
-                    "Erreur lors de l'appel pour la r�cup�ration des divisions/poules du championnat", ioex);
-        }
+        String response = HttpUtils.callGet(URLCHAMPIONNAT + idChampionnat);
+        Document doc = Jsoup.parse(response);
 
         Elements elems = doc.select("table tbody tr td div font");
         for (Element elem : elems) {
@@ -182,29 +135,9 @@ public class ChampionnatService {
         List<Poule> poules = new ArrayList<>();
 
         // Appels http
-        BasicCookieStore basicCookieStore = new BasicCookieStore();
-        HttpGet get1 = new HttpGet(URLCHAMPIONNAT + idChampionnat);
-        HttpGet get2 = new HttpGet(URLPOULE_START + idDivision + URLPOULE_END);
-        CloseableHttpClient httpClient = HttpClients.custom().setDefaultCookieStore(basicCookieStore).build();
-
-        RequestConfig config = RequestConfig.custom()./* setProxy(Main.proxy). */build();
-
-        get1.setConfig(config);
-        get2.setConfig(config);
-
         String result = "";
-
-        try {
-            httpClient.execute(get1); // Permet de setter le cookie qui sert � se souvenir de l'ID de championnat (la
-                                      // fftest statefull)
-            CloseableHttpResponse response = httpClient.execute(get2);
-
-            result = EntityUtils.toString(response.getEntity());
-
-        } catch (IOException ioex) {
-            throw new RuntimeException(
-                    "Erreur lors de l'appel pour la r�cup�ration des divisions/poules du championnat", ioex);
-        }
+        String cookie = HttpUtils.callToGetCookie(URLCHAMPIONNAT + idChampionnat);
+        result = HttpUtils.callGet(URLPOULE_START + idDivision + URLPOULE_END, cookie);
 
         // Parsing de la r�ponse (javascript donc pas via JSOUP)
         int i = 0;

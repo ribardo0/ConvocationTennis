@@ -22,7 +22,7 @@ public class PouleServiceTest {
 	public void testConsulterCalendrier() {
 		List<Integer> journees = pouleService.consulterCalendrier(325487, 1448919);
 		System.out.println(journees);
-		assertTrue(journees.size() > 0);
+		assertTrue(journees.size() == 3);
 	}
 
 }
