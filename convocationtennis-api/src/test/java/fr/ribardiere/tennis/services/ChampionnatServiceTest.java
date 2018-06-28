@@ -21,8 +21,8 @@ public class ChampionnatServiceTest {
 	}
 	
 	@Test
-	public void consulterDivisionsTest() {
-		List<Division> divisions = championnatService.consulterDivisions(82133499);
+	public void rechercherDivisionsTest() {
+		List<Division> divisions = championnatService.rechercherDivisions(82133499);
 		assertTrue(divisions.size()> 0);
 	}
 	

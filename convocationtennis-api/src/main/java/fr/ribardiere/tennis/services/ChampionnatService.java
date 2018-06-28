@@ -98,7 +98,7 @@ public class ChampionnatService {
 
     // URL en /championnat/{id}
     @RequestMapping("/championnat/{idChampionnat}")
-    public List<Division> consulterDivisions(@PathVariable int idChampionnat) {
+    public List<Division> rechercherDivisions(@PathVariable int idChampionnat) {
         List<Division> result = new ArrayList<>();
 
         String response = HttpUtils.callGet(URLCHAMPIONNAT + idChampionnat);
